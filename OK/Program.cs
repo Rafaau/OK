@@ -14,7 +14,7 @@ public static class Program
 
             if (inputParser.InputFilePath == null || inputParser.K == null)
             {
-                Console.WriteLine("No arguments delivered. Using default values.");
+                Console.WriteLine("No arguments delivered. Using default values with quality mode.");
 
                 k = 4;
 
@@ -33,7 +33,7 @@ public static class Program
 				points = FileReader.GetPoints(inputParser.InputFilePath);
             }
 
-            var result = new Result(points, k);
+            var result = new Result(inputParser.Mode, points, k);
 
             Console.WriteLine($"{result.DistanceSum:F2}");
             Console.WriteLine(string.Join(", ", result.PointIndexes));
@@ -43,9 +43,4 @@ public static class Program
             Console.WriteLine(e);
         }
 	}
-
-    internal static float ToString(this float value)
-    {
-        return (float)Math.Round(value, 2);
-    }
 }

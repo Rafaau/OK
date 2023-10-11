@@ -4,6 +4,7 @@ public class InputParser
 {
     public string? InputFilePath { get; private set; }
     public int? K { get; private set; }
+    public Mode Mode { get; private set; } = Mode.Quality;
 
     public InputParser(string[] args)
     {
@@ -24,6 +25,11 @@ public class InputParser
                 if (args[i] == "-k")
                 {
                     K = int.Parse(args[i + 1]);
+                }
+
+                if (args[i] == "-p")
+                {
+                    Mode = Mode.Performance;
                 }
             }
         }
