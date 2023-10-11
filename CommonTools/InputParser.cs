@@ -2,18 +2,13 @@
 
 public class InputParser
 {
-    public string? InputFilePath { get; private set; }
-    public int? K { get; private set; }
+    public string? InputFilePath { get; private set; } = null;
+    public int? K { get; private set; } = null;
     public Mode Mode { get; private set; } = Mode.Quality;
 
     public InputParser(string[] args)
     {
-        if (args.Length < 4)
-        {
-            InputFilePath = null;
-            K = null;
-        }
-        else
+        if (args.Length >= 4)
         {
             for (int i = 0; i < args.Length; i++)
             {
@@ -30,6 +25,11 @@ public class InputParser
                 if (args[i] == "-p")
                 {
                     Mode = Mode.Performance;
+                }
+
+                if (args[i] == "-b")
+                {
+                    Mode = Mode.Balanced;
                 }
             }
         }

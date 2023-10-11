@@ -12,8 +12,8 @@ internal static class Performance
                     Index = index,
                     Distance = points.Where((p2, index2) => index2 != index).Sum(p2 => Math.GetDistance(p, p2))
                 })
-            .OrderByDescending(pd => pd.Distance)
-            .ToList();
+                .OrderByDescending(pd => pd.Distance)
+                .ToList();
 
         var bestIndexes = pointDistances.Take(k).Select(pd => pd.Index).ToList();
         float bestDistanceSum = CalculateDistanceSumForIndexes(bestIndexes, points);

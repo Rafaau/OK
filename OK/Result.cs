@@ -26,6 +26,11 @@ internal class Result
                 DistanceSum = performanceResult.DistanceSum;
                 PointIndexes = performanceResult.PointIndexes;
                 break;
+            case Mode.Balanced:
+                var balancedResult = Balanced.GetResult(points, k);
+                DistanceSum = balancedResult.DistanceSum;
+                PointIndexes = balancedResult.PointIndexes;
+                break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
         }
