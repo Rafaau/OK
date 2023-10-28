@@ -4,7 +4,7 @@ public class InputParser
 {
     public string? InputFilePath { get; private set; } = null;
     public int? K { get; private set; } = null;
-    public Mode Mode { get; private set; } = Mode.Quality;
+    public Mode Mode { get; private set; } = Mode.Balanced;
     public bool TrackTime { get; private set; } = false;
 
     public InputParser(string[] args)
