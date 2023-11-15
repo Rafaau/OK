@@ -1,61 +1,84 @@
-﻿using System.Diagnostics;
-using System.Drawing;
-using CommonTools;
+﻿using CommonTools;
 using Google.OrTools.LinearSolver;
+using System.Text;
 
 namespace OK.EX2;
 public static class Program
 {
     public static void Main(string[] args)
-    {
-        Console.WriteLine("Test");
-        Solver solver;
+	{
+		string[] words = {
+			"LQCGAPPJAIQNNKHJNFFE",
+			"LHCGAPPJABQNNKHJBFAE",
+			"RQCGSPPJAIQNNKHJNFFE",
+			"LQCGAPPJAIQNNKHJNFFE",
+			"LQCGAPDJFIQNNKHJNFFE"
+		};
 
-        //string[] words = {
-        //    "LQCGAPPJAIQNNKHJNFFE",
-        //    "LHCGAPPJABQNNKHJBFAE",
-        //    "RQCGSPPJAIQNNKHJNFFE",
-        //    "LQCGAPPJAIQNNKHJNFFE",
-        //    "LQCGAPDJFIQNNKHJNFFE"
-        //};
+		int m = words[0].Length;
+		int n = words.Length;   
+		int k = 7;              
 
-        //int k = 7;
-        //int numColumns = words[0].Length;
+		Solver solver = Solver.CreateSolver("GLOP_LINEAR_PROGRAMMING");
 
-        //// Decision variables
-        //Variable[] x = new Variable[numColumns];
-        //for (int j = 0; j < numColumns; j++)
-        //{
-        //    x[j] = solver.MakeBoolVar($"x[{j}]");
-        //}
+		Variable[] y = new Variable[m]; // y[j] zmienna binarna wskazująca, czy kolumna j jest usuwana
 
-        //// Constraints: Remove exactly k columns
-        //Constraint remove_k_columns = solver.MakeConstraint(k, k);
-        //foreach (var var in x)
-        //{
-        //    remove_k_columns.SetCoefficient(var, 1);
-        //}
+		for (int j = 0; j < m; ++j)
+		{
+			y[j] = solver.MakeBoolVar($"y[{j}]");
+		}
 
-        //// Define the objective function
-        //// Here you might need to set coefficients based on the specifics of your problem
-        //Objective objective = solver.Objective();
-        //for (int i = 0; i < x.Length; i++)
-        //{
-        //    objective.SetCoefficient(x[i], 1); // this is a placeholder coefficient
-        //}
-        //objective.SetMaximization();
+		// suma zmiennych y[j] musi być równa k
+		Constraint kConstraint = solver.MakeConstraint(k, k);
+		foreach (Variable var in y)
+		{
+			kConstraint.SetCoefficient(var, 1);
+		}
 
-        //// Solve the problem
-        //solver.Solve();
+		LinearExpr objective = new LinearExpr();
+		for (int i = 0; i < n; ++i)
+		{
+			for (int j = i + 1; j < n; ++j)
+			{
+				for (int l = 0; l < m; ++l)
+				{
+					Variable match = solver.MakeBoolVar($"match_{i}_{j}_{l}");
+					objective += match;
 
-        //// Output the results
-        //Console.WriteLine($"Objective value = {objective.Value()}");
-        //for (int j = 0; j < numColumns; j++)
-        //{
-        //    if (x[j].SolutionValue() > 0.5)
-        //    {
-        //        Console.WriteLine($"Column {j} should be removed.");
-        //    }
-        //}
-    }
+					solver.Add(match <= 1 - y[l]);
+					solver.Add(match <= (words[i][l] == words[j][l] ? 1 : 0));
+					solver.Add(match >= (1 - y[l]) - (words[i][l] != words[j][l] ? 1 : 0));
+				}
+			}
+		}
+
+		solver.Maximize(objective);
+		Solver.ResultStatus resultStatus = solver.Solve();
+
+		if (resultStatus == Solver.ResultStatus.OPTIMAL)
+		{
+			string resultWord = "";
+			StringBuilder sb = new StringBuilder();
+
+			Console.WriteLine("Solution:");
+			for (int j = 0; j < m; ++j)
+			{
+				if (y[j].SolutionValue() > 0.5)
+				{
+					Console.WriteLine($"The column {j + 1} should be removed");
+				}
+				else
+				{
+					sb.Append(words[1][j]);
+				}
+			}
+
+			resultWord = sb.ToString();
+			Console.WriteLine($"The result word: {resultWord}");
+		}
+		else
+		{
+			Console.WriteLine("The problem does not have an optimal solution.");
+		}
+	}
 }
